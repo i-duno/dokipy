@@ -222,19 +222,82 @@ class TextUI(UI):
     """
     def __init__(self, parent_rect: pygame.Rect, parent_surf: pygame.Surface, font: pygame.font.Font, bounds: typing.Union[pygame.Rect, None] = None) -> None:
         super().__init__(parent_rect, parent_surf, bounds)
+        
+        if not pygame.font.match_font("Aller"):
+            print("The Aller_RG font is not installed on your computer, download it online PLEASEEEEE, using given")
+
         self.Font = font
         self.FG = (255, 255, 255, 255)
         self.BG = None
         self.Text = ""
+        self.Lines = []
+        self.BorderColor = (0, 0, 0)
+        self.BorderThick = 1
+        self.WrapWidth = parent_rect.width
     
-    def set_text(self, text: str):
+    def set_border(self, thickness: int = 1, color: tuple[int, int, int] = (0, 0, 0)):
+        """
+        Changes border config and draws again
+        """
+
+        self.BorderColor = color
+        self.BorderThick = thickness
+        self.set_text(self.Text)
+
+    def draw_border(self, tosurface: pygame.Surface):
+        """
+        Already being called within set_text
+        """
+        #Improve this, border will be slower on higher numbers
+        for i in range(-self.BorderThick, self.BorderThick+1):
+            for j in range(-self.BorderThick, self.BorderThick+1):
+                if i == j == 0:
+                    continue
+                for li, line in enumerate(self.Lines):
+                    txt_surf = self.Font.render(line, True, self.BorderColor)
+                    offset_pos = (i*self.BorderThick + self.BorderThick, j*self.BorderThick + self.BorderThick + li*self.Font.get_linesize())
+                    tosurface.blit(txt_surf, offset_pos)
+                
+    
+    def set_text(self, text: str, wrap_width: typing.Union[int, None] = None):
         """
         Sets the text to str
         """
-        self.Text = text
-        text_surf = self.Font.render(self.Text, True, self.FG, self.BG)
+        words = text.split(' ')
+        self.Lines = []
+        currentline = ''
+
+        if wrap_width is None:
+            wrap_width = self.WrapWidth
+
+        for word in words:
+            cacheline = currentline + f"{word} "
+            size_x, _ = self.Font.size(cacheline)
+            if size_x >= wrap_width:
+                self.Lines.append(currentline)
+                currentline = f"{word} "
+            else:
+                currentline = cacheline
+        self.Lines.append(currentline)
+ 
+        boundHeight = self.Font.get_linesize() * len(self.Lines)
+        self.Text = "\n".join(self.Lines)
+
+        text_surf = pygame.Surface((wrap_width + self.BorderThick*2, boundHeight + self.BorderThick*2), pygame.SRCALPHA)
+        self.draw_border(text_surf)
+        
+        for i, line in enumerate(self.Lines):
+            txt_surf = self.Font.render(line, True, self.FG, self.BG)
+            text_surf.blit(txt_surf, (self.BorderThick, self.BorderThick + (i*self.Font.get_linesize())))
+
         self.Surface = text_surf
         self.Bounds = self.Surface.get_rect()
+        self.Bounds.width += self.BorderThick*2
+        self.Bounds.height += self.BorderThick*2
+
+        # immediately call position
+        self.update_rect_size()
+        self.position()
 
     def get_text(self):
         """
@@ -266,3 +329,8 @@ class ImageUI(UI):
         self.Surface = pygame.image.load(source)
         self.Surface.convert_alpha()
         self.Bounds = self.Surface.get_rect()
+
+    def replace_image(self, source: str):
+        self.Surface = pygame.image.load(source)
+        self.Surface.convert_alpha()
+        self.resize((self.Bounds.width, self.Bounds.height))
