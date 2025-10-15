@@ -44,7 +44,10 @@ EASE_STYLE: dict[str, typing.Callable[[float], float]] = {
 }
 
 class Tween:
-    def __init__(self, time: float, target: int, initial: int, easeStyle: str = 'linear', callback: typing.Union[typing.Callable[[float]], None] = None) -> None:
+    """
+    Tween class allowing you to tween value A->B
+    """
+    def __init__(self, time: float, target: float, initial: float, easeStyle: str = 'linear', callback: typing.Union[typing.Callable[[float]], None] = None) -> None:
         self.Value = initial
         self.A = initial
         self.B = target
@@ -58,6 +61,9 @@ class Tween:
         TWEENS[self.Index] = self
 
     def get_now(self):
+        """
+        Gets the current value.
+        """
         alpha = self.Alpha
         if self.EaseStyle in EASE_STYLE:
             alpha = EASE_STYLE[self.EaseStyle](alpha)

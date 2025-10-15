@@ -7,6 +7,9 @@ import threading
 CHANNEL_EVENTS = 0
 
 class Audio:
+    """
+    Audio class
+    """
     def __init__(self, system: AudioSystem, sound_group: str, path: str):
         self.System = system
         self.Sound = pygame.mixer.Sound(path)
@@ -14,6 +17,9 @@ class Audio:
         self.VolGroup = sound_group
     
     def Play(self, vol: float = 1.0, loop: bool = False, callback: typing.Union[typing.Callable, None, list[typing.Callable]] = None):
+        """
+        Play audio and optionally bind callback
+        """
         if self.Channel != -1 and self.IsPlaying():
             self.System._unpause(self)
             return
@@ -24,16 +30,28 @@ class Audio:
         self.System._play(self, vol, loop, callback)
     
     def Stop(self):
+        """
+        Stop audio
+        """
         self.System._stop(self)
 
     def Pause(self):
+        """
+        Pause audio
+        """
         self.System._pause(self)
 
     def IsPlaying(self):
+        """
+        Return audio state (if completed false, if paused or playing true)
+        """
         return self.System._isPlaying(self)
     
 
 class AudioSystem:
+    """
+    Audio system
+    """
     def __init__(self, max_channel=64):
         pygame.mixer.init()
         pygame.mixer.set_num_channels(max_channel)
@@ -46,6 +64,9 @@ class AudioSystem:
         CHANNEL_EVENTS = pygame.USEREVENT+max_channel
 
     def Load(self, path: str, name: typing.Union[str, None] = None, sound_group: str = 'default', load_async: bool = False) -> Audio:
+        """
+        Load an audio track and return audio object
+        """
         if name is None:
             name = str(uuid.uuid4())
         if name in self.Sounds:
@@ -62,6 +83,9 @@ class AudioSystem:
         return self.Sounds[name]
     
     def Update(self, event: pygame.event.Event):
+        """
+        Update audio tracks for callbacks
+        """
         if event.type in self.Callbacks:
             func_cache = self.Callbacks[event.type]
             del self.Callbacks[event.type]
@@ -73,6 +97,9 @@ class AudioSystem:
                     continue
 
     def SetGroup_Vol(self, sound_group: str, vol: float):
+        """
+        Set audio playing in channels with same sound_group to vol
+        """
         for k, audio in self.ChannelAudio.items():
             if not self._isPlaying(audio=audio):
                 continue
@@ -81,9 +108,15 @@ class AudioSystem:
                 
 
     def _isPlaying(self, audio: Audio) -> bool:
+        """
+        Internal function
+        """
         return self.Channels[audio.Channel].get_busy()
 
     def _play(self, audio: Audio, vol: float, loop: bool, callback: typing.Union[None, list[typing.Callable]]):
+        """
+        Internal function
+        """
         for i, channel in enumerate(self.Channels):
             ev_id = pygame.USEREVENT+i
             if not channel.get_busy():
@@ -98,6 +131,9 @@ class AudioSystem:
                 break
 
     def _stop(self, audio: Audio):
+        """
+        Internal function
+        """
         ev_id = pygame.USEREVENT+audio.Channel
         if ev_id in self.Callbacks:
             del self.Callbacks[ev_id]
@@ -105,8 +141,16 @@ class AudioSystem:
         self.Channels[audio.Channel].stop()
 
     def _pause(self, audio: Audio):
+        """
+        Internal function
+        """
         if self._isPlaying(audio):
             self.Channels[audio.Channel].pause()
     
     def _unpause(self, audio: Audio):
+        """
+        Internal function
+        """
         self.Channels[audio.Channel].unpause()
+        
+MAIN_MIX = pygame.mixer.music
