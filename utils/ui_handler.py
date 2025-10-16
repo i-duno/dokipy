@@ -6,7 +6,11 @@ import uuid
 UIOBJ: dict[str, UI] = {}
 
 def update_all(Event: list[pygame.event.Event], MousePos: tuple[int, int]):
-    for v in list(UIOBJ.values()):
+    # iterate through UI object first 
+    sort_stack = list(UIOBJ.values())
+    sort_stack.sort(key=lambda ui: ui.ZIndex)
+
+    for v in sort_stack:
         # keep updating position
         v.ParentSurface.blit(*v.get_blit())
         v._update_states(Event, MousePos)
@@ -36,7 +40,7 @@ class UI:
         self.Bounds = bounds
         self.Hovering = False
         self.Active = False
-        self.Surface = pygame.Surface((bounds.width, bounds.height), pygame.SRCALPHA)
+        self.Surface = pygame.Surface((bounds.width, bounds.height))
         self.ParentSurface = parent_surf
         self.ParentRect = parent_rect
         self.Anchor = (0.0, 0.0)
@@ -45,6 +49,8 @@ class UI:
         self.ID = str(uuid.uuid4())
         self.DrawArea = pygame.Rect(0, 0, self.Bounds.width, self.Bounds.height)
         self.ImageFitTuple = (bounds.width, bounds.height, 'x')
+        self.OnStack = True
+        self.ZIndex = 0
         
         self.Events: dict[typing.Literal['onhover', 'onleave', 'onclick'], dict[str, UI_Event]] = {
             'onhover': {},
@@ -89,12 +95,18 @@ class UI:
         else:
             self.Active = False
     
-    def delete(self):
+    def set_visible(self, state: bool):
         """
-        Delete ui element
+        Toggles ui element from render stack
         """
-        if self.ID in UIOBJ:
-            del UIOBJ[self.ID]
+        if state:
+            if not self.OnStack:
+                UIOBJ[self.ID] = self
+                self.OnStack = True
+        else:
+            if self.ID in UIOBJ:
+                self.OnStack = False
+                del UIOBJ[self.ID]
 
     def _onhover(self, ev: UI_Event):
         """
@@ -143,7 +155,7 @@ class UI:
         """
         Resizes the surface to given coordinate without constraint
         """
-        self.Surface = pygame.transform.scale(self.Surface, size)
+        self.Surface = pygame.transform.smoothscale(self.Surface, size)
         self.update_rect_size()
 
     def image_fit(self, size: tuple[int, int], keep: typing.Literal['x', 'y'] = 'x'):
@@ -170,7 +182,7 @@ class UI:
             newY = newX/ratio
         else:
             newX = newY/ratio
-        self.Surface = pygame.transform.scale(self.Surface, (newX, newY))
+        self.Surface = pygame.transform.smoothscale(self.Surface, (newX, newY))
         self.update_rect_size()
 
     def set_anchor(self, coordinate: tuple[float, float]=(0, 0)):
@@ -234,6 +246,7 @@ class TextUI(UI):
         self.BorderColor = (0, 0, 0)
         self.BorderThick = 1
         self.WrapWidth = parent_rect.width
+        self.Alignment: typing.Literal['left', 'right', 'center'] = 'left'
     
     def set_border(self, thickness: int = 1, color: tuple[int, int, int] = (0, 0, 0)):
         """
@@ -255,11 +268,20 @@ class TextUI(UI):
                     continue
                 for li, line in enumerate(self.Lines):
                     txt_surf = self.Font.render(line, True, self.BorderColor)
-                    offset_pos = (i*self.BorderThick + self.BorderThick, j*self.BorderThick + self.BorderThick + li*self.Font.get_linesize())
+
+                    x_offset = self.BorderThick
+                    line_size = self.Font.size(line)
+                    if self.Alignment == 'center':
+                        x_offset += (self.WrapWidth-line_size[0])//2
+                    elif self.Alignment == 'right':
+                        x_offset += self.WrapWidth-line_size[0]
+                    else: # do nothing on left
+                        pass
+
+                    offset_pos = (i*self.BorderThick + x_offset, j*self.BorderThick + self.BorderThick + li*self.Font.get_linesize())
                     tosurface.blit(txt_surf, offset_pos)
-                
     
-    def set_text(self, text: str, wrap_width: typing.Union[int, None] = None):
+    def set_text(self, text: str, wrap: typing.Union[int, None] = None):
         """
         Sets the text to str
         """
@@ -267,13 +289,15 @@ class TextUI(UI):
         self.Lines = []
         currentline = ''
 
-        if wrap_width is None:
-            wrap_width = self.WrapWidth
+        if wrap is None:
+            self.WrapWidth: int = self.WrapWidth
+        else:
+            self.WrapWidth = wrap
 
         for word in words:
             cacheline = currentline + f"{word} "
             size_x, _ = self.Font.size(cacheline)
-            if size_x >= wrap_width:
+            if size_x >= self.WrapWidth:
                 self.Lines.append(currentline)
                 currentline = f"{word} "
             else:
@@ -283,12 +307,22 @@ class TextUI(UI):
         boundHeight = self.Font.get_linesize() * len(self.Lines)
         self.Text = "\n".join(self.Lines)
 
-        text_surf = pygame.Surface((wrap_width + self.BorderThick*2, boundHeight + self.BorderThick*2), pygame.SRCALPHA)
+        text_surf = pygame.Surface((self.WrapWidth + self.BorderThick*2, boundHeight + self.BorderThick*2), pygame.SRCALPHA)
         self.draw_border(text_surf)
         
         for i, line in enumerate(self.Lines):
             txt_surf = self.Font.render(line, True, self.FG, self.BG)
-            text_surf.blit(txt_surf, (self.BorderThick, self.BorderThick + (i*self.Font.get_linesize())))
+
+            x_offset = self.BorderThick
+            line_size = self.Font.size(line)
+            if self.Alignment == 'center':
+                x_offset += (self.WrapWidth-line_size[0])//2
+            elif self.Alignment == 'right':
+                x_offset += self.WrapWidth-line_size[0]
+            else: # do nothing on left
+                pass
+
+            text_surf.blit(txt_surf, (x_offset, self.BorderThick + (i*self.Font.get_linesize())))
 
         self.Surface = text_surf
         self.Bounds = self.Surface.get_rect()
@@ -331,6 +365,9 @@ class ImageUI(UI):
         self.Bounds = self.Surface.get_rect()
 
     def replace_image(self, source: str):
+        """
+        Replaces image and resizes it to match original image
+        """
         self.Surface = pygame.image.load(source)
         self.Surface.convert_alpha()
         self.resize((self.Bounds.width, self.Bounds.height))

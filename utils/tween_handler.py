@@ -73,7 +73,7 @@ def update_all(dt: float):
     del_list = []
     for self in TWEENS.values():
         self.Time += dt
-        self.Alpha = min(self.Time/self.Delay, 1)
+        self.Alpha = 1 if self.Delay <= 0 else min(self.Time/self.Delay, 1)
 
         if self.Alpha >= 1:
             del_list.append(self.Index)
