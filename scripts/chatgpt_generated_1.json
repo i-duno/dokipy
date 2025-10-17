@@ -27,7 +27,7 @@
             "char_offset": [0, -70],
             "text_delay": -1,
             "font": "aller",
-            "font_size": 40,
+            "font_size": 28,
             "talk_sound": "assets/audio/button_press.mp3"
         }
     ],
@@ -73,7 +73,7 @@
             "char_remove": [],
             "char_talk": "Trix",
             "char_personality": "default",
-            "talk_content": "Hoy, ayaw pag-ingon nga wa ka kakita. She’s right there oh.",
+            "talk_content": "Hoy, ayaw pag-ingon nga wa ka kakita. She's right there oh.",
             "bgaudio_change": ""
         },
         {
