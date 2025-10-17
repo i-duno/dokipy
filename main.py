@@ -9,6 +9,8 @@ import utils.ui_handler as UIEng
 import utils.sprite_handler as SpriteEng
 import utils.tween_handler as Tween
 
+from OpenGL.GLU import * # type: ignore
+from OpenGL.GL import * # type: ignore
 import src.dialogue as DialogueHandler
 
 pygame.init()
@@ -19,14 +21,12 @@ SCR_WIDTH = 800
 RES_HEIGHT = 0
 RES_WIDTH = 0
 
-# workaround to run faster while not moving to opengl
-# HOW DO PEOPLE GET 90 FPS ON THIS?????
 RES_SCALE = 1
-SCR_SCALE = 0.4
+SCR_SCALE = 0.5
 
 TIMER: pygame.time.Clock = None #type: ignore
 WINDOW: pygame.surface.Surface = None #type: ignore
-FPS = 60
+FPS = 0
 
 # initial setup
 DisplayInfo = pygame.display.Info()
@@ -36,12 +36,21 @@ SCR_HEIGHT = int(DisplayInfo.current_h*SCR_SCALE)
 SCR_WIDTH = int(DisplayInfo.current_w*SCR_SCALE)
 RES_HEIGHT = int(SCR_HEIGHT*RES_SCALE)
 RES_WIDTH = int(SCR_WIDTH*RES_SCALE)
-#windowed fullscreen looks best
-#extremely laggy! lol uh idk just half the resolution
 
-WINDOW = pygame.display.set_mode((SCR_WIDTH, SCR_HEIGHT), vsync=1)
+WINDOW = pygame.display.set_mode((SCR_WIDTH, SCR_HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF)
 TIMER = pygame.time.Clock()
-WINDOW.fill(COLORS.BGCOLOR)
+
+# setup opengl
+glViewport(0, 0, RES_WIDTH, RES_HEIGHT)
+glMatrixMode(GL_PROJECTION) #idk the other optins
+glLoadIdentity() #idk what this does
+
+glOrtho(0, RES_WIDTH, RES_HEIGHT, 0, -1, 1) #apparently minx, maxx, miny, maxy, depth range
+glMatrixMode(GL_MODELVIEW) #idk what this does
+glLoadIdentity()
+
+glClearColor(0, 0.5, 0, 1)
+glClear(GL_COLOR_BUFFER_BIT)
 
 RENDER = pygame.Surface((RES_WIDTH, RES_HEIGHT))
 
@@ -50,6 +59,8 @@ pygame.display.set_icon(pygame.image.load('assets/sprite/3a.png'))
 
 # todo to make this game good:
 # nothing yet, maybe character movement?
+
+# switching to opengl
 
 # load main theme music
 SoundEng.MAIN_MIX.load('assets/audio/main_theme.mp3')
@@ -88,17 +99,17 @@ all_dialogue = [
 
 def dialogueSkip():
     actorName = str(uuid.uuid4())
-    DialogueHandler.define_actors('assets/sprite/3a.png', actorName)
-    DialogueHandler.add_actor_to_scene(actorName, 'left')
     AUDIO_ENG.Load('assets/audio/button_press.mp3').Play()
     def upd_position(value: float):
         DialogueHandler.get_actor('monika1').PxPos = (0, value)
+        DialogueHandler.get_actor('monika1').position()
     Tween.Tween(0.7, 20, -40, 'bounce', upd_position)
     dialogue.set_text(all_dialogue[0])
     all_dialogue.pop(0)
+    DialogueHandler.define_actors('assets/sprite/3a.png', actorName)
+    DialogueHandler.add_actor_to_scene(actorName, 'left')
 
 textbox._onclick(UIEng.UI_Event(lambda: dialogueSkip()))
-SpriteEng.update_all(0)
 
 dt = 0
 while True:
@@ -111,12 +122,12 @@ while True:
     Tween.update_all(dt)
     mouse_pos = pygame.mouse.get_pos()
     UIEng.update_all(events, (int(mouse_pos[0]*RES_SCALE), int(mouse_pos[1]*RES_SCALE)))
-  
-    pygame.display.flip()
-    pygame.display.set_caption(f"dokipy {TIMER.get_fps():.1f}")
 
     render_scaled = pygame.transform.scale(RENDER, (SCR_WIDTH, SCR_HEIGHT))
-    render_scaled.convert()
     WINDOW.blit(render_scaled, (0, 0))
+
+    pygame.display.flip()
+    pygame.display.set_caption(f"dokipy {TIMER.get_fps():.1f}")
+    glClear(GL_COLOR_BUFFER_BIT)
 
     dt = TIMER.tick(FPS)/1000
