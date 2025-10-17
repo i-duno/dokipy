@@ -17,7 +17,7 @@ class Animation:
     """
     def __init__(self, sprite: AnimatableSprite, source: str, dimentions: tuple[int, int], grid: tuple[int, int], length: float):
         self.Surface = pygame.image.load(source)
-        self.Surface.convert_alpha()
+        self.Surface = self.Surface.convert_alpha()
         self.Dimentions = dimentions
         self.Grid = grid
         self.ID = str(uuid.uuid4())

@@ -1,0 +1,193 @@
+{
+    "Scenes": [
+        {
+            "name": "canteen",
+            "src": "assets/bg/canteen.png"
+        },
+        {
+            "name": "hallway_rain",
+            "src": "assets/bg/hallway_rain.png"
+        }
+    ],
+    "DialogueBoxes": [
+        {
+            "name": "basic",
+            "src": "assets/ui/textbox.png",
+            "scale": [0.8, 1]
+        }
+    ],
+    "Personalities": [
+        {
+            "name": "default",
+            "diag_easing": "elastic",
+            "diag_easelen": 0.5,
+            "diag_offset": [50, 0],
+            "char_easing": "bounce",
+            "char_easelen": 0.7,
+            "char_offset": [0, -70],
+            "text_delay": -1,
+            "font": "aller",
+            "font_size": 40,
+            "talk_sound": "assets/audio/button_press.mp3"
+        }
+    ],
+    "Characters": [
+        {
+            "name": "Lian",
+            "src": "assets/sprite/lian.png",
+            "ratio": 0.5
+        },
+        {
+            "name": "Mira",
+            "src": "assets/sprite/mira.png",
+            "ratio": 1
+        },
+        {
+            "name": "Trix",
+            "src": "assets/sprite/trix.png",
+            "ratio": 1
+        }
+    ],
+    "Setup": {
+        "background": "canteen",
+        "characters": [
+            {
+                "name": "Lian",
+                "dialoguebox": "basic"
+            },
+            {
+                "name": "Mira",
+                "dialoguebox": "basic"
+            },
+            {
+                "name": "Trix",
+                "dialoguebox": "basic"
+            }
+        ],
+        "bgaudio": "assets/audio/theme_soft.mp3"
+    },
+    "Story": [
+        {
+            "background_change": "canteen",
+            "char_add": [],
+            "char_remove": [],
+            "char_talk": "Trix",
+            "char_personality": "default",
+            "talk_content": "Hoy, ayaw pag-ingon nga wa ka kakita. She’s right there oh.",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Lian",
+            "char_personality": "default",
+            "talk_content": "Shh. Basin makabantay.",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Trix",
+            "char_personality": "default",
+            "talk_content": "Makabantay jud na kung magtan-aw ka murag CCTV!",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_add": [],
+            "char_talk": "Mira",
+            "char_personality": "default",
+            "talk_content": "Lian? Ngano man, naa koy dungan sa lunch?",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Lian",
+            "char_personality": "default",
+            "talk_content": "Ah—uhm, wala, wala. Gi-check nako akong—battery. Lowbat.",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "hallway_rain",
+            "char_talk": "Mira",
+            "char_personality": "default",
+            "talk_content": "Sus, walay payong. Basin mag-ulan gyud ug maayo.",
+            "bgaudio_change": "assets/audio/rain_ambience.mp3"
+        },
+        {
+            "background_change": "",
+            "char_talk": "Lian",
+            "char_personality": "default",
+            "talk_content": "Uhm... gusto nimo... apil?",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Mira",
+            "char_personality": "default",
+            "talk_content": "Sige na lang, kaysa maulan.",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Mira",
+            "char_personality": "default",
+            "talk_content": "Lian, ngano man gyud ka hilom pirmi?",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Lian",
+            "char_personality": "default",
+            "talk_content": "Basin... kung magsulti ko... dili na ko makalingi nimo.",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Mira",
+            "char_personality": "default",
+            "talk_content": "Hala, unsa na sad nang linya. Trix must've taught you that.",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Lian",
+            "char_personality": "default",
+            "talk_content": "Wala bitaw. Gikan jud sa... ako.",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "canteen",
+            "char_talk": "Lian",
+            "char_personality": "default",
+            "talk_content": "Later that week, Lian leaves a folded note on the table and quickly walks away.",
+            "bgaudio_change": "assets/audio/theme_soft.mp3"
+        },
+        {
+            "background_change": "",
+            "char_talk": "Mira",
+            "char_personality": "default",
+            "talk_content": "Thanks for walking with me that day. Pwede pa ko magsabay sunod?",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Mira",
+            "char_personality": "default",
+            "talk_content": "Hoy, lowbat na pud ka?",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Lian",
+            "char_personality": "default",
+            "talk_content": "Oo. Basin ikaw makacharge.",
+            "bgaudio_change": ""
+        },
+        {
+            "background_change": "",
+            "char_talk": "Trix",
+            "char_personality": "default",
+            "talk_content": "KILIG! Hahaha! nigga",
+            "bgaudio_change": ""
+        }
+    ]
+}

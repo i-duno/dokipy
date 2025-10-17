@@ -1,0 +1,89 @@
+{
+    "Scenes": [
+        {
+            "name": "classroom",
+            "src": "assets/bg/club-skill.png"
+        }
+    ],
+    "DialogueBoxes": [
+        {
+            "name": "basic",
+            "src": "assets/ui/textbox.png",
+            "scale": [
+                0.8,
+                1
+            ]
+        }
+    ],
+    "Personalities": [
+        {
+            "name": "default",
+            "diag_easing": "elastic",
+            "diag_easelen": 0.5,
+            "diag_offset": [
+                50,
+                0
+            ],
+            "char_easing": "bounce",
+            "char_easelen": 0.7,
+            "char_offset": [
+                0,
+                -70
+            ],
+            "text_delay": -1,
+            "font": "aller",
+            "font_size": 40,
+            "talk_sound": "assets/audio/button_press.mp3"
+        }
+    ],
+    "Characters": [
+        {
+            "name": "Monika",
+            "src": "assets/sprite/3a.png",
+            "ratio": 1
+        },
+        {
+            "name": "OtherMonika",
+            "src": "assets/sprite/3a.png",
+            "ratio": 1
+        },
+        {
+            "name": "ThirdMonika",
+            "src": "assets/sprite/cameraman.png",
+            "ratio": 0.5
+        }
+    ],
+    "Setup": {
+        "background": "classroom",
+        "characters": [
+            {
+                "name": "Monika",
+                "dialoguebox": "basic"
+            },
+            {
+                "name": "ThirdMonika",
+                "dialoguebox": "basic"
+            }
+        ],
+        "bgaudio": "assets/audio/main_theme.mp3"
+    },
+    "Story": [
+        {
+            "background_change": "",
+            "char_add": [
+                {
+                    "name": "OtherMonika",
+                    "dialoguebox": "basic",
+                    "direction": "left"
+                }
+            ],
+            "char_remove": [
+                "ThirdMonika"
+            ],
+            "char_talk": "Monika",
+            "char_personality": "default",
+            "talk_content": "testing testing 123",
+            "bgaudio_change": ""
+        }
+    ]
+}

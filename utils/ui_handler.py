@@ -280,6 +280,12 @@ class TextUI(UI):
 
                     offset_pos = (i*self.BorderThick + x_offset, j*self.BorderThick + self.BorderThick + li*self.Font.get_linesize())
                     tosurface.blit(txt_surf, offset_pos)
+
+    def flip_image(self, x: bool, y: bool):
+        """
+        Flips the image.
+        """
+        self.Surface = pygame.transform.flip(self.Surface, x, y)
     
     def set_text(self, text: str, wrap: typing.Union[int, None] = None):
         """
@@ -361,7 +367,7 @@ class ImageUI(UI):
     def __init__(self, parent_rect: pygame.Rect, parent_surf: pygame.Surface, source: str, bounds: typing.Union[pygame.Rect, None] = None) -> None:
         super().__init__(parent_rect, parent_surf, bounds)
         self.Surface = pygame.image.load(source)
-        self.Surface.convert()
+        self.Surface = self.Surface.convert_alpha()
         self.Bounds = self.Surface.get_rect()
 
     def replace_image(self, source: str):
@@ -369,5 +375,5 @@ class ImageUI(UI):
         Replaces image and resizes it to match original image
         """
         self.Surface = pygame.image.load(source)
-        self.Surface.convert()
+        self.Surface = self.Surface.convert_alpha()
         self.resize((self.Bounds.width, self.Bounds.height))
