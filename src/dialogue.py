@@ -229,6 +229,10 @@ class ActorController:
         index = ACTIVE_ACTORS.index(self.Actor)
         del ACTIVE_ACTORS[index]
 
+        #Update actors again
+        for v in ACTIVE_CONTROLLERS:
+            v.update_actor_position(1)
+
 def define_actors(src: str, alias: str, size_scale: int = 1):
     '''
     Define actors

@@ -53,7 +53,8 @@
         "characters": [
             {
                 "name": "Lian",
-                "dialoguebox": "basic"
+                "dialoguebox": "basic",
+                "direction": "right"
             },
             {
                 "name": "Mira",
@@ -93,6 +94,7 @@
         {
             "background_change": "",
             "char_add": [],
+            "char_remove": [],
             "char_talk": "Mira",
             "char_personality": "default",
             "talk_content": "Lian? Ngano man, naa koy dungan sa lunch?",
@@ -107,6 +109,7 @@
         },
         {
             "background_change": "hallway_rain",
+            "char_remove": ["Trix"],
             "char_talk": "Mira",
             "char_personality": "default",
             "talk_content": "Sus, walay payong. Basin mag-ulan gyud ug maayo.",
@@ -156,6 +159,11 @@
         },
         {
             "background_change": "canteen",
+            "char_add": [{
+                "name": "Trix",
+                "dialoguebox": "basic",
+                "direction": "right"
+            }],
             "char_talk": "Lian",
             "char_personality": "default",
             "talk_content": "Later that week, Lian leaves a folded note on the table and quickly walks away.",
