@@ -229,6 +229,9 @@ class ActorController:
         index = ACTIVE_ACTORS.index(self.Actor)
         del ACTIVE_ACTORS[index]
 
+        index = ACTIVE_CONTROLLERS.index(self)
+        del ACTIVE_CONTROLLERS[index]
+
         #Update actors again
         for v in ACTIVE_CONTROLLERS:
             v.update_actor_position(1)
